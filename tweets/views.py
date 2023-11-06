@@ -1,22 +1,22 @@
-from multiprocessing import context
 from django.shortcuts import render
+from django.views.generic import ListView, DetailView
+
 
 from .models import Tweet
 
 
-def tweet_list_view(request):
-  qs = Tweet.objects.all()
-  context = {
-    'object_list': qs,
-    'title': 'List',
-  }
-  return render(request, 'tweets/list.html', context)
+class TweetListView(ListView):
+  queryset = Tweet.objects.all()
 
+  def get_context_data(self, *args, **kwargs):
+    context = super().get_context_data(*args, **kwargs)
+    context['title'] = 'Tweets List'
+    return context
 
-def tweet_detail_view(request, pk=1):
-  obj = Tweet.objects.get(pk=pk)
-  context = {
-    'object': obj,
-    'title': 'Detail',
-  }
-  return render(request, 'tweets/detail.html', context)
+class TweetDetailView(DetailView):
+  queryset = Tweet.objects.all()
+
+  def get_context_data(self, *args, **kwargs):
+    context = super().get_context_data(*args, **kwargs)
+    context['title'] = 'Tweet Detail'
+    return context

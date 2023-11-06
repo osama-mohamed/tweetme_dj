@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  {{ block.super }}
+  {{ block.super }} | {{ title }}
 {% endblock %}
 
 
 {% block body %}
-  <h1>Tweets</h1>
+  <h1>{{ title }}</h1>
   {% for object in object_list %}
     <div>
       <p>{{ object.user }}</p>
@@ -14,5 +14,7 @@
       <p>{{ object.timestamp|timesince }} ago</p>
     </div>
     <hr>
+  {% empty %}
+    <p>No tweets yet.</p>
   {% endfor %}
 {% endblock %}

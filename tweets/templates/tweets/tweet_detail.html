@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  {{ block.super }}
+  {{ block.super }} | {{ title }}
 {% endblock %}
 
 
 {% block body %}
-  <h1>Tweets</h1>
+  <h1>{{ title }}</h1>
   <p>{{ object.content }}</p>
   <p>{{ object.user }}</p>
   <p>{{ object.timestamp|timesince }} ago</p>
