@@ -1,26 +1,21 @@
-from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import (
   ListView, 
   DetailView,
   CreateView,
 )
 
-
 from .models import Tweet
 from .forms import TweetModelForm
+from .mixins import FormUserNeededMixin
 
 
-
-class TweetCreateView(CreateView):
+class TweetCreateView(LoginRequiredMixin, FormUserNeededMixin, CreateView):
   form_class = TweetModelForm
   template_name = 'tweets/create_view.html'
   success_url = reverse_lazy('tweets:list')
-
-  def form_valid(self, form):
-    if self.request.user.is_authenticated:
-      form.instance.user = self.request.user
-      return super().form_valid(form)
+  login_url = '/admin/'
 
   def get_context_data(self, *args, **kwargs):
     context = super().get_context_data(*args, **kwargs)
