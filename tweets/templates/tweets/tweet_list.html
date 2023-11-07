@@ -6,29 +6,35 @@
 
 
 {% block body %}
-  {% include "tweets/includes/search_form.html" %}
-  <br>
-  <h1>{{ title }}</h1>
-  <a href="{% url 'tweets:create' %}">Create</a>
-  {% for object in object_list %}
-    <div>
-      <p>
-        {{ object.user }}
-        <a href="{% url 'tweets:detail' object.id %}">view</a>
-        {% if request.user == object.user %}
-          <a href="{% url 'tweets:update' object.id %}">update</a>
-          <a href="{% url 'tweets:delete' object.id %}">delete</a>
+  <div class="row justify-content-md-center">
+    <div class="col col-sm-8 col-offset-2">
+      {% include "tweets/includes/search_form.html" %}
+      <br>
+      <h1>
+        {{ title }}
+        <small><a href="{% url 'tweets:create' %}">Create</a></small>
+      </h1>
+      {% for object in object_list %}
+        <div class="media">
+          <div class="media-body">
+            <h5 class="mt-0">{{ object.content }}</h5>
+            <p>via {{ object.user }} | {{ object.timestamp|timesince }} ago
+              <a href="{% url 'tweets:detail' object.id %}">view</a> |
+              {% if request.user == object.user %}
+                <a href="{% url 'tweets:update' object.id %}">update</a> |
+                <a href="{% url 'tweets:delete' object.id %}">delete</a>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+        <hr>
+      {% empty %}
+        {% if request.GET.q %}
+          <p>No tweets found.</p>
+        {% else %}
+          <p>No tweets yet.</p>
         {% endif %}
-      </p>
-      <p>{{ object.content }}</p>
-      <p>{{ object.timestamp|timesince }} ago</p>
+      {% endfor %}
     </div>
-    <hr>
-  {% empty %}
-    {% if request.GET.q %}
-      <p>No tweets found.</p>
-    {% else %}
-      <p>No tweets yet.</p>
-    {% endif %}
-  {% endfor %}
+  </div>
 {% endblock %}
