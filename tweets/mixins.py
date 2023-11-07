@@ -10,3 +10,13 @@ class FormUserNeededMixin(object):
     else:
       form._errors[forms.forms.NON_FIELD_ERRORS] = ErrorList(['User must be logged in to continue'])
       return self.form_invalid(form)
+
+
+class UserOwnerMixin(object):
+  def form_valid(self, form):
+    if form.instance.user == self.request.user:
+      return super().form_valid(form)
+    else:
+      form._errors[forms.forms.NON_FIELD_ERRORS] = ErrorList(['You are not the owner so, you are not allowed to change this data.'])
+      return self.form_invalid(form)
+    

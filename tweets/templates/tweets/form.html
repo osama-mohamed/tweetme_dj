@@ -1,0 +1,5 @@
+<form method="POST" class="form">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="{% if btn_title %}{{ btn_title }}{% else %}Tweet{% endif %}">
+</form>
