@@ -5,6 +5,7 @@ from django.views.generic import (
   DetailView,
   CreateView,
   UpdateView,
+  DeleteView,
 )
 
 from .models import Tweet
@@ -36,6 +37,12 @@ class TweetUpdateView(LoginRequiredMixin, UserOwnerMixin, UpdateView):
       context['title'] = 'Update Tweet'
       context['btn_title'] = 'Update Tweet'
       return context
+
+
+class TweetDeleteView(LoginRequiredMixin, UserOwnerMixin, DeleteView):
+    model = Tweet
+    success_url = reverse_lazy('tweets:list')
+    login_url = '/admin/'
 
 
 class TweetListView(ListView):
