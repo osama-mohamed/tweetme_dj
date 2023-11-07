@@ -6,6 +6,8 @@
 
 
 {% block body %}
+  {% include "tweets/includes/search_form.html" %}
+  <br>
   <h1>{{ title }}</h1>
   <a href="{% url 'tweets:create' %}">Create</a>
   {% for object in object_list %}
@@ -23,6 +25,10 @@
     </div>
     <hr>
   {% empty %}
-    <p>No tweets yet.</p>
+    {% if request.GET.q %}
+      <p>No tweets found.</p>
+    {% else %}
+      <p>No tweets yet.</p>
+    {% endif %}
   {% endfor %}
 {% endblock %}
