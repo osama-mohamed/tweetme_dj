@@ -21,8 +21,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 
-app_name = 'tweets'
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('tweet/', include('tweets.urls', namespace='tweets')),

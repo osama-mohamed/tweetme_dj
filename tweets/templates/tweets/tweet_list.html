@@ -7,9 +7,17 @@
 
 {% block body %}
   <h1>{{ title }}</h1>
+  <a href="{% url 'tweets:create' %}">Create</a>
   {% for object in object_list %}
     <div>
-      <p>{{ object.user }}</p>
+      <p>
+        {{ object.user }}
+        <a href="{% url 'tweets:detail' object.id %}">view</a>
+        {% if request.user == object.user %}
+          <a href="{% url 'tweets:update' object.id %}">update</a>
+          <a href="{% url 'tweets:delete' object.id %}">delete</a>
+        {% endif %}
+      </p>
       <p>{{ object.content }}</p>
       <p>{{ object.timestamp|timesince }} ago</p>
     </div>

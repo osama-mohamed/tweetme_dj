@@ -1,5 +1,9 @@
 <form method="POST" class="form">
+  <a href="{% url 'tweets:list' %}">Go Back to tweets list</a>
   {% csrf_token %}
   {{ form.as_p }}
   <input type="submit" value="{% if btn_title %}{{ btn_title }}{% else %}Tweet{% endif %}">
+  {% if request.user == object.user %}
+    <a href="{% url 'tweets:delete' object.id %}">delete</a>
+  {% endif %}
 </form>
