@@ -43,6 +43,11 @@ class TweetDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('tweets:list')
     login_url = '/admin/'
 
+    def get_context_data(self, *args, **kwargs):
+      context = super().get_context_data(*args, **kwargs)
+      context['title'] = 'Delete Tweet'
+      return context
+
 
 class TweetListView(ListView):
 

@@ -7,7 +7,9 @@
     <title>{% block title %}Tweetme{% endblock %}</title>
   </head>
   <body>
-    {% block body %}{% endblock %}
+    <div class="container">
+      {% block body %}{% endblock %}
+    </div>
     {% include 'includes/js.html' %}
   </body>
 </html>
