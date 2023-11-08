@@ -11,7 +11,7 @@
   
   <div class="row">
     <div class="col-sm-3">
-      <h3>
+      <h3 id="current-user">
         {% if request.user.username %}
           {{ request.user.username }}
         {% endif %}
@@ -29,9 +29,9 @@
       {% for object in object_list %}
         <h5 class="mt-0">{{ object.content }}</h5>
         <p>via {{ object.user }} | {{ object.timestamp|timesince }} ago
-          <a href="{% url 'tweets:detail' object.id %}">view</a> |
+          <a href="{% url 'tweets:detail' object.id %}">view</a>
           {% if request.user == object.user %}
-            <a href="{% url 'tweets:update' object.id %}">update</a> |
+            | <a href="{% url 'tweets:update' object.id %}">update</a> |
             <a href="{% url 'tweets:delete' object.id %}">delete</a>
           {% endif %}
         </p>
@@ -50,30 +50,83 @@
 
 {% block javascript %}
 <script>
-  $(document).ready(function(){
-    $.ajax({
-      url: "{% url 'tweets_api:list' %}",
-      method: "GET",
-      success: function(data){
-        $.each(data, function(key, value){
-          var tweetContent = value.content;
-          var tweetUser = value.user;
-          $("#tweet-container").append(`
-            <h5 class="mt-0">${ value.content }</h5>
-            <p>via ${ value.user.username } | ${ value.timestamp } ago
-              <a href="${ value.id }/">view</a> |
+  function getParameterByName(name, url = window.location.href) {
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+  }
+
+  function formatTimestamp(timestamp) {
+    const currentTime = new Date();
+    const timestampDate = new Date(timestamp);
+    const timeDifference = currentTime - timestampDate;
+    const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let formattedTimestamp = '';
+    if (days > 0) {
+      formattedTimestamp += `${days} ${days === 1 ? 'day' : 'days'}`;
+    }
+    if (hours > 0) {
+      formattedTimestamp += ` ${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+    }
+    if (days === 0 && hours === 0) {
+      formattedTimestamp = 'Less than an hour';
+    }
+    return formattedTimestamp.trim();
+  }
+
+  const url2 = getParameterByName('q') ? "{% url 'tweets_api:list' %}?q=" + getParameterByName('q') : "{% url 'tweets_api:list' %}";
+  console.log(url2);
+
+  // const url = window.origin + "{% url 'tweets_api:list' %}";
+  fetch(url2)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    const div = document.getElementById("tweet-container");
+    const user = document.getElementById("current-user").textContent.trim();
+      data.forEach((value, key) => {
+        const tweetContent = value.content;
+        const tweetTimestamp = value.timestamp;
+        const tweetUser = value.user.username;
+        const tweetURL = value.url;
+        const tweetUpdateURL = value.update_url;
+        const tweetDeleteURL = value.delete_url;
+
+        let tweetHTML = `
+        {{ tweet.content }}
+          <h5 class="mt-0">${tweetContent}</h5>
+          <p>via ${tweetUser} | ${ formatTimestamp(tweetTimestamp) } ago
+            <a href="${tweetURL}">view</a>
+            `;
+            if (user == tweetUser) {
+              tweetHTML +=
+            `
+            | <a href="${tweetUpdateURL}">update</a> |
+            <a href="${tweetDeleteURL}">delete</a>
+          </p>
+          <hr>
+        `
+        } else {
+          tweetHTML += `
             </p>
             <hr>
-            `
-          )
-        })
-      },
-      error: function(data){
-        console.log("error")
-        console.log(data)
-      }
-    })
-
+          `
+        };
+        div.innerHTML += tweetHTML;
   });
+    
+  })
+  .catch(error => {
+    console.error('There has been a problem with your fetch operation:', error);
+  });
+
 </script>
 {% endblock %}
