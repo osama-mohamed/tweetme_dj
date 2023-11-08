@@ -48,6 +48,17 @@
 {% endblock %}
 
 
+{% block css %}
+<style>
+  .red-color {
+    color: red;
+  }
+  .grey-color {
+    color: #ccc;
+  }
+</style>
+{% endblock %}
+
 {% block javascript %}
 <script>
   function getParameterByName(name, url = window.location.href) {
@@ -110,11 +121,27 @@
   }
   fetchTweets();
 
+  const charsStart = 140;
+  let charsCurrent = 0;
+  document.getElementById('tweet-form').innerHTML += `<span id='tweetCharsLeft'>${charsStart}</span>`;
+  document.getElementById('id_content').addEventListener('keyup', function(event) {
+    let tweetValue = event.target.value;
+    charsCurrent = charsStart - tweetValue.length;
+    const spanChars = document.getElementById('tweetCharsLeft')
+    spanChars.textContent = charsCurrent;
+    if (charsCurrent > 0) {
+      spanChars.classList.remove("grey-color");
+      spanChars.classList.remove("red-color");
+    } else if (charsCurrent === 0) {
+      spanChars.classList.remove("red-color");
+      spanChars.classList.add("grey-color");
+    } else if (charsCurrent < 0) {
+      spanChars.classList.remove("grey-color");
+      spanChars.classList.add("red-color");
+    }
+  });
 
-
-  document.querySelector('#tweet-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const url = window.origin + "{% url 'tweets:create' %}";
+  function submitTweet(event){
     const formData = new FormData(event.target);
     const content = formData.get('content');
     let serializedData = {};
@@ -139,6 +166,14 @@
     .catch(error => {
       console.error('Error:', error);
     });
+  }
+  document.getElementById('tweet-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    if (charsCurrent >= 0 ) {
+      submitTweet(event);
+    } else {
+      alert('Your tweet is too long.');
+    }
     
   });
 </script>
