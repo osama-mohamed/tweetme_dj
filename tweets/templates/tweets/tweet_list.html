@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}
   {{ block.super }} | {{ title }}
 {% endblock %}
@@ -22,6 +24,7 @@
           <hr class="mt-4">
         </div>
       {% endif %}
+      <div id='tweet-container'></div>
 
       {% for object in object_list %}
         <h5 class="mt-0">{{ object.content }}</h5>
@@ -42,4 +45,35 @@
       {% endfor %}
     </div>
   </div>
+{% endblock %}
+
+
+{% block javascript %}
+<script>
+  $(document).ready(function(){
+    $.ajax({
+      url: "{% url 'tweets_api:list' %}",
+      method: "GET",
+      success: function(data){
+        $.each(data, function(key, value){
+          var tweetContent = value.content;
+          var tweetUser = value.user;
+          $("#tweet-container").append(`
+            <h5 class="mt-0">${ value.content }</h5>
+            <p>via ${ value.user.username } | ${ value.timestamp } ago
+              <a href="${ value.id }/">view</a> |
+            </p>
+            <hr>
+            `
+          )
+        })
+      },
+      error: function(data){
+        console.log("error")
+        console.log(data)
+      }
+    })
+
+  });
+</script>
 {% endblock %}

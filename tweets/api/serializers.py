@@ -11,4 +11,6 @@ class TweetModelSerializer(ModelSerializer):
     fields = [
       'user',
       'content',
+      'timestamp',
+      'id',
     ]
