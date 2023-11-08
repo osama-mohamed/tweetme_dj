@@ -1,10 +1,18 @@
-from rest_framework.generics import ListAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.db.models import Q
 
 
 from tweets.models import Tweet
 from .serializers import TweetModelSerializer
+
+
+class TweetCreateAPIView(CreateAPIView):
+  serializer_class = TweetModelSerializer
+  permission_classes = [IsAuthenticated]
+
+  def perform_create(self, serializer):
+    serializer.save(user=self.request.user)
 
 
 class TweetListAPIView(ListAPIView):

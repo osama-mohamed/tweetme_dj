@@ -20,7 +20,7 @@
     <div class="col-sm-9">
       {% if not request.GET.q %}
         <div class="row">
-          {% include "tweets/includes/form.html" with form=form btn_title=btn_title action_url=action_url %}
+          {% include "tweets/includes/form.html" with form=form btn_title=btn_title action_url=action_url form_id='tweet-form' %}
           <hr class="mt-4">
         </div>
       {% endif %}
@@ -65,68 +65,104 @@
     const timeDifference = currentTime - timestampDate;
     const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
     const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
     let formattedTimestamp = '';
     if (days > 0) {
-      formattedTimestamp += `${days} ${days === 1 ? 'day' : 'days'}`;
+      formattedTimestamp += `${days} ${days === 1 ? 'day,' : 'days,'}`;
     }
     if (hours > 0) {
-      formattedTimestamp += ` ${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+      formattedTimestamp += ` ${hours} ${hours === 1 ? 'hour,' : 'hours,'}`;
     }
-    if (days === 0 && hours === 0) {
-      formattedTimestamp = 'Less than an hour';
+    if (minutes > 0) {
+      formattedTimestamp += ` ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
+    }
+    if (days === 0 && hours === 0 && minutes === 0) {
+      formattedTimestamp = 'Less than a minute';
     }
     return formattedTimestamp.trim();
   }
 
-  const url2 = getParameterByName('q') ? "{% url 'tweets_api:list' %}?q=" + getParameterByName('q') : "{% url 'tweets_api:list' %}";
-  console.log(url2);
+  function fetchTweets() {
+    const url = getParameterByName('q') ? "{% url 'tweets_api:list' %}?q=" + getParameterByName('q') : "{% url 'tweets_api:list' %}";
+    fetch(url)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      const div = document.getElementById("tweet-container");
+      const user = document.getElementById("current-user").textContent.trim();
+        data.forEach((value, key) => {
+          const tweetContent = value.content;
+          const tweetTimestamp = value.timestamp;
+          const tweetUser = value.user.username;
+          const tweetURL = value.url;
+          const tweetUpdateURL = value.update_url;
+          const tweetDeleteURL = value.delete_url;
 
-  // const url = window.origin + "{% url 'tweets_api:list' %}";
-  fetch(url2)
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  })
-  .then(data => {
-    const div = document.getElementById("tweet-container");
-    const user = document.getElementById("current-user").textContent.trim();
-      data.forEach((value, key) => {
-        const tweetContent = value.content;
-        const tweetTimestamp = value.timestamp;
-        const tweetUser = value.user.username;
-        const tweetURL = value.url;
-        const tweetUpdateURL = value.update_url;
-        const tweetDeleteURL = value.delete_url;
-
-        let tweetHTML = `
-        {{ tweet.content }}
-          <h5 class="mt-0">${tweetContent}</h5>
-          <p>via ${tweetUser} | ${ formatTimestamp(tweetTimestamp) } ago
-            <a href="${tweetURL}">view</a>
-            `;
-            if (user == tweetUser) {
-              tweetHTML +=
-            `
-            | <a href="${tweetUpdateURL}">update</a> |
-            <a href="${tweetDeleteURL}">delete</a>
-          </p>
-          <hr>
-        `
-        } else {
-          tweetHTML += `
+          let tweetHTML = `
+          {{ tweet.content }}
+            <h5 class="mt-0">${tweetContent}</h5>
+            <p>via ${tweetUser} | ${ formatTimestamp(tweetTimestamp) } ago
+              <a href="${tweetURL}">view</a>
+              `;
+              if (user == tweetUser) {
+                tweetHTML +=
+              `
+              | <a href="${tweetUpdateURL}">update</a> |
+              <a href="${tweetDeleteURL}">delete</a>
             </p>
             <hr>
           `
-        };
-        div.innerHTML += tweetHTML;
-  });
-    
-  })
-  .catch(error => {
-    console.error('There has been a problem with your fetch operation:', error);
-  });
+          } else {
+            tweetHTML += `
+              </p>
+              <hr>
+            `
+          };
+          div.innerHTML += tweetHTML;
+    });
+    })
+    .catch(error => {
+      console.error('There has been a problem with your fetch operation:', error);
+    });
+  }
+  fetchTweets();
 
+
+
+  document.querySelector('#tweet-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const url = window.origin + "{% url 'tweets:create' %}";
+    const formData = new FormData(event.target);
+    const content = formData.get('content');
+    let serializedData = {};
+    for (const [key, value] of formData.entries()) {
+      serializedData[key] = value;
+    }
+    console.log(serializedData, JSON.stringify(serializedData))
+    const createURL = window.location.origin + "{% url 'tweets_api:create' %}";
+    fetch(createURL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': serializedData['csrfmiddlewaretoken'],
+      },
+      body: JSON.stringify(serializedData),
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      fetchTweets();
+      event.target.reset();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+    
+  });
 </script>
 {% endblock %}

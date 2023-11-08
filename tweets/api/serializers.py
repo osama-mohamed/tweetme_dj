@@ -7,7 +7,7 @@ from tweets.models import Tweet
 
 
 class TweetModelSerializer(ModelSerializer):
-  user = UserDisplaySerializers()
+  user = UserDisplaySerializers(read_only=True)
   url = SerializerMethodField()
   update_url = SerializerMethodField()
   delete_url = SerializerMethodField()
