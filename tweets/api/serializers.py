@@ -1,5 +1,6 @@
 from rest_framework.serializers import ModelSerializer
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse
+from django.utils.timesince import timesince
 
 
 from accounts.api.serializers import UserDisplaySerializers, SerializerMethodField
@@ -11,6 +12,8 @@ class TweetModelSerializer(ModelSerializer):
   url = SerializerMethodField()
   update_url = SerializerMethodField()
   delete_url = SerializerMethodField()
+  date_display = SerializerMethodField()
+  timesince = SerializerMethodField()
 
   class Meta:
     model = Tweet
@@ -22,6 +25,8 @@ class TweetModelSerializer(ModelSerializer):
       'url',
       'update_url',
       'delete_url',
+      'date_display',
+      'timesince',
     ]
 
   def get_url(self, obj):
@@ -32,3 +37,9 @@ class TweetModelSerializer(ModelSerializer):
   
   def get_delete_url(self, obj):
     return self.context.get('request').build_absolute_uri(reverse('tweets:delete', kwargs={'pk': obj.pk}))
+  
+  def get_date_display(self, obj):
+    return obj.timestamp.strftime('%b %d %Y, at %I:%M %p')
+  
+  def get_timesince(self, obj):
+    return timesince(obj.timestamp) + ' ago'
