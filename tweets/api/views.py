@@ -5,6 +5,7 @@ from django.db.models import Q
 
 from tweets.models import Tweet
 from .serializers import TweetModelSerializer
+from .pagination import StandardResultsSetPagination
 
 
 class TweetCreateAPIView(CreateAPIView):
@@ -19,6 +20,7 @@ class TweetListAPIView(ListAPIView):
   # queryset = Tweet.objects.all()
   serializer_class = TweetModelSerializer
   permission_classes = [AllowAny]
+  pagination_class = StandardResultsSetPagination
 
   def get_queryset(self, *args, **kwargs):
     qs = Tweet.objects.all()
