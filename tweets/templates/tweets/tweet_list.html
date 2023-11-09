@@ -78,7 +78,7 @@
     let tweetHTML = `
     {{ tweet.content }}
       <h5 class="mt-0">${tweetValue.content}</h5>
-      <p>via ${tweetValue.user.username} | ${ tweetValue.timesince }
+      <p>via <a href="${tweetValue.user.url}">${tweetValue.user.username}</a> | ${ tweetValue.timesince }
         <a href="${tweetValue.url}">view</a>
         `;
         if (user == tweetValue.user.username) {

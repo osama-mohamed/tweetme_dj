@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from django.urls import reverse
+from django.urls import reverse_lazy
 from django.utils.timesince import timesince
 
 
@@ -33,10 +33,10 @@ class TweetModelSerializer(ModelSerializer):
     return self.context.get('request').build_absolute_uri(obj.get_absolute_url())
   
   def get_update_url(self, obj):
-    return self.context.get('request').build_absolute_uri(reverse('tweets:update', kwargs={'pk': obj.pk}))
+    return self.context.get('request').build_absolute_uri(reverse_lazy('tweets:update', kwargs={'pk': obj.pk}))
   
   def get_delete_url(self, obj):
-    return self.context.get('request').build_absolute_uri(reverse('tweets:delete', kwargs={'pk': obj.pk}))
+    return self.context.get('request').build_absolute_uri(reverse_lazy('tweets:delete', kwargs={'pk': obj.pk}))
   
   def get_date_display(self, obj):
     return obj.timestamp.strftime('%b %d %Y, at %I:%M %p')
