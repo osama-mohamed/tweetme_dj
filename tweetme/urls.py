@@ -24,6 +24,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('tweet/', include('tweets.urls', namespace='tweets')),
+    path('account/', include('accounts.urls', namespace='accounts')),
 
     path('api/tweet/', include('tweets.api.urls', namespace='tweets_api')),
 ]

@@ -23,8 +23,13 @@
             Profile
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
+            {% if request.user.is_authenticated %}
+            <li><a class="dropdown-item" href="{% url 'accounts:detail' username=request.user.username %}">My Profile</a></li>
+            <!-- <li><a class="dropdown-item" href="">Logout</a></li> -->
+            {% else %}
+            <!-- <li><a class="dropdown-item" href="">Login</a></li>
+            <li><a class="dropdown-item" href="">Register</a></li> -->
+            {% endif %}
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="#">Something else here</a></li>
           </ul>

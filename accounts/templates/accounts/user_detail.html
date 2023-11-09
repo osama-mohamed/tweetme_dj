@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ block.super }} | {{ title }}
+{% endblock %}
+
+
+{% block body %}
+  <div class="row">
+    <div class="col-sm-3">
+      <h3>{{ object.username }}</h3>
+    </div>
+    <div class="col-sm-9">
+      <h3>Tweets</h3>
+      {% for object in object.tweet_set.all %}
+        <h5 class="mt-0">{{ object.content }}</h5>
+        <p>via {{ object.user }} | {{ object.timestamp|timesince }} ago
+          <a href="{% url 'tweets:detail' object.id %}">view</a>
+          | <a href="{% url 'tweets:update' object.id %}">update</a>
+          | <a href="{% url 'tweets:delete' object.id %}">delete</a>
+        </p>
+        <hr>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
