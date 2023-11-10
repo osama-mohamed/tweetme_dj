@@ -11,6 +11,9 @@
       <h1>{{ object.username }}</h1>
       <h3>Followers: <small>{{ object.followed_by.all.count }}</small></h3>
       <h3>Following: <small>{{ object.profile.get_following.count }}</small></h3>
+      <p>
+        <a href="{% url 'accounts:follow' username=object.username %}" class="btn btn-link">Follow</a>
+      </p>
       <!-- {% for user in object.profile.following.all %} -->
       <!-- {% endfor %} -->
       {% for user in object.profile.get_following %}
