@@ -9,9 +9,11 @@
   <div class="row">
     <div class="col-sm-3">
       <h1>{{ object.username }}</h1>
-      <h4>Followers: {{ object.followed_by.count }}</h4>
-      <h3>Following</h3>
-      {% for user in object.profile.following.all %}
+      <h3>Followers: <small>{{ object.followed_by.all.count }}</small></h3>
+      <h3>Following: <small>{{ object.profile.get_following.count }}</small></h3>
+      <!-- {% for user in object.profile.following.all %} -->
+      <!-- {% endfor %} -->
+      {% for user in object.profile.get_following %}
         <p>
           <a href="{% url 'accounts:detail' user.username %}">
             {{ user.username }}
