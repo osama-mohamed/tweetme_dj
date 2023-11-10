@@ -8,7 +8,30 @@
 {% block body %}
   <div class="row">
     <div class="col-sm-3">
-      <h3>{{ object.username }}</h3>
+      <h1>{{ object.username }}</h1>
+      <h4>Followers: {{ object.followed_by.count }}</h4>
+      <h3>Following</h3>
+      {% for user in object.profile.following.all %}
+        <p>
+          <a href="{% url 'accounts:detail' user.username %}">
+            {{ user.username }}
+          </a>
+        </p>
+      {% empty %}
+        <p>Not following any users yet.</p>
+      {% endfor %}
+      <hr>
+      <h3>Followed By</h3>
+      {% for profile in object.followed_by.all %}
+        <p>
+          <a href="{% url 'accounts:detail' profile.user.username %}">
+            {{ profile.user.username }}
+          </a>
+        </p>
+      {% empty %}
+        <p>Not followed by any users yet.</p>
+      {% endfor %}
+
     </div>
     <div class="col-sm-9">
       <h3>Tweets</h3>
