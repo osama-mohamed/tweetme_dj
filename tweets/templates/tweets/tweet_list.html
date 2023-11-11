@@ -79,7 +79,7 @@
     const user = document.getElementById("current-user").textContent.trim();
     let tweetHTML = `
     {{ tweet.content }}
-      <h5 class="mt-0">${tweetValue.content}</h5>
+      <h5 class="mt-0 tweet-content">${tweetValue.content}</h5>
       <p>via <a href="${tweetValue.user.url}">${tweetValue.user.username}</a> | ${ tweetValue.timesince }
         <a href="${tweetValue.url}">view</a>
         `;
@@ -132,6 +132,7 @@
       } else {
         data.results.forEach((value, key) => {
           attachTweet(value);
+          updateHashLinks();
         });
       }
     })
@@ -187,6 +188,7 @@
     .then(data => {
       event.target.reset();
       attachTweet(data, prepend=true);
+      updateHashLinks();
     })
     .catch(error => {
       console.error('Error:', error);
@@ -201,5 +203,20 @@
     }
     
   });
+
+
+  function updateHashLinks(){
+    const hashtagRegex = /(^|\s)#([\w\d]+)/g;
+    const div = document.getElementById('tweet-container');
+    const tweets = div.querySelectorAll('.tweet-content');
+    tweets.forEach((value) => {
+      console.log(value.innerHTML);
+      value.innerHTML = value.innerHTML.replace(hashtagRegex, '$1<a href="/tags/$2/">#$2</a>');
+      //value.innerHTML = value.innerHTML.replace(hashtagRegex, '$1<a href="/tags/$2">#$2</a>');
+    });
+  }
+  
 </script>
 {% endblock %}
+
+<!-- value.innerHTML = value.innerHTML.replace(hashtagRegex, '$1<a href="{% url "hashtags:detail" slug="$2" %}">#$2</a>'); -->
