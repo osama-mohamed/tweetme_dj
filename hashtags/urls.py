@@ -1,9 +1,9 @@
 from django.urls import path
 
-# from .views import 
+from .views import HashTagView
 
 app_name = 'hashtags'
 
 urlpatterns = [
-  # path('<str:username>/', UserDetailView.as_view(), name='detail'),
+  path('<str:hashtag>/', HashTagView.as_view(), name='detail'),
 ]

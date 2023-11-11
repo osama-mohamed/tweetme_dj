@@ -210,13 +210,9 @@
     const div = document.getElementById('tweet-container');
     const tweets = div.querySelectorAll('.tweet-content');
     tweets.forEach((value) => {
-      console.log(value.innerHTML);
-      value.innerHTML = value.innerHTML.replace(hashtagRegex, '$1<a href="/tags/$2/">#$2</a>');
-      //value.innerHTML = value.innerHTML.replace(hashtagRegex, '$1<a href="/tags/$2">#$2</a>');
+      value.innerHTML = value.innerHTML.replace(hashtagRegex, `$1<a href='{% url 'hashtags:detail' hashtag='$2' %}'>#$2</a>`);
     });
   }
   
 </script>
 {% endblock %}
-
-<!-- value.innerHTML = value.innerHTML.replace(hashtagRegex, '$1<a href="{% url "hashtags:detail" slug="$2" %}">#$2</a>'); -->

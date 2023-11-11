@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+  {{ block.super }} | {{ title }} #{{ obj.tag }}
+{% endblock %}
+
+
+{% block body %}
+  
+  <div class="row">
+    <div class="col-sm-3">
+      <h3 id="current-user">
+        #{{ obj.tag }}
+      </h3>
+    </div>
+    <div class="col-sm-9">
+      {% for object in obj.get_tweets %}
+        <h5 class="mt-0">{{ object.content }}</h5>
+        <p>via {{ object.user }} | {{ object.timestamp|timesince }} ago
+          <a href="{% url 'tweets:detail' object.id %}">view</a>
+          {% if request.user == object.user %}
+            | <a href="{% url 'tweets:update' object.id %}">update</a> |
+            <a href="{% url 'tweets:delete' object.id %}">delete</a>
+          {% endif %}
+        </p>
+        <hr>
+      {% empty %}
+        {% if request.GET.q %}
+          <p>No tweets found.</p>
+        {% else %}
+          <p>No tweets yet.</p>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
