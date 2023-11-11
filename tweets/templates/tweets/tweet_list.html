@@ -74,23 +74,37 @@
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
   }
 
-  function attachTweet(tweetValue, prepend=false){
+  function attachTweet(tweetValue, prepend=false, retweet){
     const div = document.getElementById("tweet-container");
     const user = document.getElementById("current-user").textContent.trim();
-    let tweetHTML = `
-    {{ tweet.content }}
-      <h5 class="mt-0 tweet-content">${tweetValue.content}</h5>
-      <p>via <a href="${tweetValue.user.url}">${tweetValue.user.username}</a> | ${ tweetValue.timesince }
-        <a href="${tweetValue.url}">view</a>
-        `;
-        if (user == tweetValue.user.username) {
-          tweetHTML +=
+    let tweetHTML;
+    if (retweet && tweetValue.parent){
+      const mainTweet = tweetValue.parent;
+      tweetHTML = `
+        <small style="color:#ccc;">Retweeted Via ${tweetValue.user.username} at ${tweetValue.timesince}</small>
+        {{ mainTweet.content }}
+        <h5 class="mt-0 tweet-content">${tweetValue.content}</h5>
+        <p>via <a href="${mainTweet.user.url}">${mainTweet.user.username}</a> | ${ mainTweet.timesince }
+          <a href="${mainTweet.url}">view</a>
+          | <a href="${tweetValue.parent.retweet_url}">Retweet</a>
+          `;
+    } else {
+      tweetHTML = `
+      {{ tweet.content }}
+        <h5 class="mt-0 tweet-content">${tweetValue.content}</h5>
+        <p>via <a href="${tweetValue.user.url}">${tweetValue.user.username}</a> | ${ tweetValue.timesince }
+          <a href="${tweetValue.url}">view</a>
+          | <a href="${tweetValue.retweet_url}">Retweet</a>
+          `;
+    }
+    if (user == tweetValue.user.username) {
+      tweetHTML +=
         `
         | <a href="${tweetValue.update_url}">update</a> |
         <a href="${tweetValue.delete_url}">delete</a>
-      </p>
-      <hr>
-    `
+        </p>
+        <hr>
+      `
     } else {
       tweetHTML += `
         </p>
@@ -131,7 +145,11 @@
         document.getElementById('tweet-container').textContent = "No tweets currently found.";
       } else {
         data.results.forEach((value, key) => {
-          attachTweet(value);
+          if (value.parent){
+            attachTweet(value, prepend=false, retweet=true);
+          } else {
+            attachTweet(value);
+          }
           updateHashLinks();
         });
       }

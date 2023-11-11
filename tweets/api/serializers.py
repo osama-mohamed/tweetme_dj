@@ -7,13 +7,14 @@ from accounts.api.serializers import UserDisplaySerializers, SerializerMethodFie
 from tweets.models import Tweet
 
 
-class TweetModelSerializer(ModelSerializer):
+class ParentTweetModelSerializer(ModelSerializer):
   user = UserDisplaySerializers(read_only=True)
   url = SerializerMethodField()
   update_url = SerializerMethodField()
   delete_url = SerializerMethodField()
   date_display = SerializerMethodField()
   timesince = SerializerMethodField()
+  retweet_url = SerializerMethodField()
 
   class Meta:
     model = Tweet
@@ -27,6 +28,7 @@ class TweetModelSerializer(ModelSerializer):
       'delete_url',
       'date_display',
       'timesince',
+      'retweet_url',
     ]
 
   def get_url(self, obj):
@@ -43,3 +45,52 @@ class TweetModelSerializer(ModelSerializer):
   
   def get_timesince(self, obj):
     return timesince(obj.timestamp) + ' ago'
+  
+  def get_retweet_url(self, obj):
+    return self.context.get('request').build_absolute_uri(reverse_lazy('tweets:retweet', kwargs={'pk': obj.pk}))
+
+
+
+class TweetModelSerializer(ModelSerializer):
+  user = UserDisplaySerializers(read_only=True)
+  url = SerializerMethodField()
+  update_url = SerializerMethodField()
+  delete_url = SerializerMethodField()
+  date_display = SerializerMethodField()
+  timesince = SerializerMethodField()
+  retweet_url = SerializerMethodField()
+  parent = ParentTweetModelSerializer(read_only=True)
+
+  class Meta:
+    model = Tweet
+    fields = [
+      'user',
+      'id',
+      'content',
+      'timestamp',
+      'url',
+      'update_url',
+      'delete_url',
+      'date_display',
+      'timesince',
+      'retweet_url',
+      'parent',
+    ]
+
+  def get_url(self, obj):
+    return self.context.get('request').build_absolute_uri(obj.get_absolute_url())
+  
+  def get_update_url(self, obj):
+    return self.context.get('request').build_absolute_uri(reverse_lazy('tweets:update', kwargs={'pk': obj.pk}))
+  
+  def get_delete_url(self, obj):
+    return self.context.get('request').build_absolute_uri(reverse_lazy('tweets:delete', kwargs={'pk': obj.pk}))
+  
+  def get_date_display(self, obj):
+    return obj.timestamp.strftime('%b %d %Y, at %I:%M %p')
+  
+  def get_timesince(self, obj):
+    return timesince(obj.timestamp) + ' ago'
+  
+  def get_retweet_url(self, obj):
+    return self.context.get('request').build_absolute_uri(reverse_lazy('tweets:retweet', kwargs={'pk': obj.pk}))
