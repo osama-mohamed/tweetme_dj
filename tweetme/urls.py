@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('tweet/', include('tweets.urls', namespace='tweets')),
     path('account/', include('accounts.urls', namespace='accounts')),
+    path('hashtag/', include('hashtags.urls', namespace='hashtags')),
 
     path('api/tweet/', include('tweets.api.urls', namespace='tweets_api')),
 ]
