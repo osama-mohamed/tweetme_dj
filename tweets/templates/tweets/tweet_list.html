@@ -25,7 +25,7 @@
         </div>
       {% endif %}
       <div id='tweet-container'></div>
-      <a href="#" id="load-more" class="btn btn-link">Load more Tweets</a>
+      <a href="#" id="load-more" style="display: none;" class="btn btn-link">Load more Tweets</a>
 <!-- 
       {% for object in object_list %}
         <h5 class="mt-0">{{ object.content }}</h5>
@@ -63,6 +63,8 @@
 {% block javascript %}
 <script>
   let nextTweetUrl;
+  let tweetList;
+
   function getParameterByName(name, url = window.location.href) {
     name = name.replace(/[\[\]]/g, '\\$&');
     var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
@@ -118,14 +120,20 @@
       return response.json();
     })
     .then(data => {
+      tweetList = data.results;
       if (data.next){
+        document.getElementById('load-more').style.display = 'block';
         nextTweetUrl = data.next;
       } else {
         document.getElementById('load-more').style.display = 'none';
       }
-      data.results.forEach((value, key) => {
-      attachTweet(value);
-    });
+      if (tweetList == 0) {
+        document.getElementById('tweet-container').textContent = "No tweets currently found.";
+      } else {
+        data.results.forEach((value, key) => {
+          attachTweet(value);
+        });
+      }
     })
     .catch(error => {
       console.error('There has been a problem with your fetch operation:', error);
