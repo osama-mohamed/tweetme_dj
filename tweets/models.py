@@ -1,7 +1,9 @@
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
-from  django.utils import timezone
+from django.utils import timezone
+from django.db.models.signals import post_save
+import re
 
 
 from .validators import validate_content
@@ -45,3 +47,18 @@ class Tweet(models.Model):
   
   def get_absolute_url(self):
     return reverse('tweets:detail', kwargs={'pk': self.pk})
+
+
+def tweet_post_save_receiver(sender, instance, created, *args, **kwargs):
+  if created and not instance.parent:
+    user_regex = r'@(?P<username>[\w.@+-]+)'
+    user_matches = re.findall(user_regex, instance.content)
+    for username in user_matches:
+      print(username) # send notification to user here.
+    hashtag_regex = r'#(?P<hashtag>[\w\d-]+)'
+    hashtag_matches = re.findall(hashtag_regex, instance.content)
+    for hashtag in hashtag_matches:
+      print(hashtag) # send hashtag signal to user here.
+
+
+post_save.connect(tweet_post_save_receiver, sender=Tweet)

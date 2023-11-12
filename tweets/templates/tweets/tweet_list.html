@@ -225,10 +225,11 @@
 
   function updateHashLinks(){
     const hashtagRegex = /(^|\s)#([\w\d]+)/g;
+    const usernameRegex = /(^|\s)@([\w\d]+)/g;
     const div = document.getElementById('tweet-container');
     const tweets = div.querySelectorAll('.tweet-content');
     tweets.forEach((value) => {
-      value.innerHTML = value.innerHTML.replace(hashtagRegex, `$1<a href='{% url 'hashtags:detail' hashtag='$2' %}'>#$2</a>`);
+      value.innerHTML = value.innerHTML.replace(hashtagRegex, `$1<a href='{% url 'hashtags:detail' hashtag='$2' %}'>#$2</a>`).replace(usernameRegex, ` $1<a href='{% url 'accounts:detail' username='$2' %}'>@$2</a>`);
     });
   }
 
