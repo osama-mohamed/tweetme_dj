@@ -64,6 +64,6 @@
 
 {% block javascript %}
   <script>
-    divID('tweet-container-user', create=false, url='{% url "tweets_api:list" %}');
+    divID('tweet-container-user', create=false, url="{% url 'accounts_api:list' username=object.username %}");
   </script>
 {% endblock %}

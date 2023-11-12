@@ -27,6 +27,7 @@ urlpatterns = [
     path('account/', include('accounts.urls', namespace='accounts')),
     path('hashtag/', include('hashtags.urls', namespace='hashtags')),
 
+    path('api/account/', include('accounts.api.urls', namespace='accounts_api')),
     path('api/tweet/', include('tweets.api.urls', namespace='tweets_api')),
 ]
 if settings.DEBUG:
