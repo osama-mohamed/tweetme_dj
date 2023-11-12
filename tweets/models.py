@@ -6,6 +6,7 @@ from django.db.models.signals import post_save
 import re
 
 
+from hashtags.signals import parsed_hashtags
 from .validators import validate_content
 
 
@@ -57,6 +58,7 @@ def tweet_post_save_receiver(sender, instance, created, *args, **kwargs):
       print(username) # send notification to user here.
     hashtag_regex = r'#(?P<hashtag>[\w\d-]+)'
     hashtag_matches = re.findall(hashtag_regex, instance.content)
+    parsed_hashtags.send(sender=instance.__class__, hashtag_list=hashtag_matches)
     for hashtag in hashtag_matches:
       print(hashtag) # send hashtag signal to user here.
 
