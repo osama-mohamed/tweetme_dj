@@ -1,3 +1,4 @@
+from multiprocessing import context
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.db.models import Q
@@ -21,7 +22,7 @@ class RetweetAPIView(APIView):
       if request.user.is_authenticated:
         new_tweet = Tweet.objects.retweet(request.user, tweet_qs.first())
         if new_tweet is not None:
-          data = TweetModelSerializer(new_tweet).data
+          data = TweetModelSerializer(new_tweet, context={'request': self.request}).data
           return Response(data)
         message = 'Cannot retweet the same in 1 day'
     return Response({'message': message}, status=400)

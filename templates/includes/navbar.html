@@ -24,7 +24,7 @@
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             {% if request.user.is_authenticated %}
-            <li><a class="dropdown-item" href="{% url 'accounts:detail' username=request.user.username %}">My Profile</a></li>
+            <li><a class="dropdown-item" id="current-user" data-user="{{ request.user.username }}" href="{% url 'accounts:detail' username=request.user.username %}">My Profile</a></li>
             <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
             {% else %}
             <!-- <li><a class="dropdown-item" href="">Login</a></li>
