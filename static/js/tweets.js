@@ -25,6 +25,10 @@ function getParameterByName(name, url=window.location.href) {
 function attachTweet(tweetValue, prepend=false, retweet){
   const currentUser = document.getElementById("current-user").getAttribute('data-user');
   let tweetHTML;
+  let verb = 'Like';
+  if (tweetValue.did_like) {
+    verb = 'Unlike';
+  }
   if (retweet && tweetValue.parent) {
     const mainTweet = tweetValue.parent;
     tweetHTML = `
@@ -33,7 +37,7 @@ function attachTweet(tweetValue, prepend=false, retweet){
       <p>via <a href="${mainTweet.user.url}">${mainTweet.user.username}</a> | ${ mainTweet.timesince }
         <a href="${mainTweet.url}">view</a>
         | <a class="retweet" id="${tweetValue.parent.id}" href="${tweetValue.parent.retweet_url}">Retweet</a>
-        | <a class="like" href="${tweetValue.parent.like_url}">Like</a>
+        | <a class="like" href="${tweetValue.parent.like_url}">${verb} (${tweetValue.likes})</a>
         `;
   } else {
     tweetHTML = `
@@ -41,7 +45,7 @@ function attachTweet(tweetValue, prepend=false, retweet){
       <p>via <a href="${tweetValue.user.url}">${tweetValue.user.username}</a> | ${ tweetValue.timesince }
         <a href="${tweetValue.url}">view</a>
         | <a class="retweet" id="${tweetValue.id}" href="${tweetValue.retweet_url}">Retweet</a>
-        | <a class="like" href="${tweetValue.like_url}">Like</a>
+        | <a class="like" href="${tweetValue.like_url}">${verb} (${tweetValue.likes})</a>
         `;
   }
   if (currentUser == tweetValue.user.username) {
@@ -216,7 +220,6 @@ function submitTweet(event){
 function tweetLike() {
   div.addEventListener('click', (e) => {
     e.preventDefault();
-    // const this_ = e.target;
     if (e.target.classList.contains('like')) {
       const likeURL = e.target.href; 
       fetch(likeURL, {
@@ -225,12 +228,9 @@ function tweetLike() {
       .then(response => response.json())
       .then(data => {
         if (data && data.liked) {
-          e.target.textContent = 'Liked';
-          // attachTweet(data, prepend=true, retweet=true);
-          // updateHashLinks();
+          e.target.textContent = `Unlike (${data.likes})`;
         } else {
-          e.target.textContent = 'Unliked';
-          // alert(data.message);
+          e.target.textContent = `Like (${data.likes})`;
         }
       })
       .catch(error => {

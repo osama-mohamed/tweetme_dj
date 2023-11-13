@@ -66,6 +66,8 @@ class TweetModelSerializer(ModelSerializer):
   timesince = SerializerMethodField()
   retweet_url = SerializerMethodField()
   like_url = SerializerMethodField()
+  likes = SerializerMethodField()
+  did_like = SerializerMethodField()
   parent = ParentTweetModelSerializer(read_only=True)
 
   class Meta:
@@ -82,6 +84,8 @@ class TweetModelSerializer(ModelSerializer):
       'timesince',
       'retweet_url',
       'like_url',
+      'likes',
+      'did_like',
       'parent',
     ]
 
@@ -105,3 +109,14 @@ class TweetModelSerializer(ModelSerializer):
   
   def get_like_url(self, obj):
     return self.context.get('request').build_absolute_uri(reverse_lazy('tweets_api:like', kwargs={'pk': obj.pk}))
+  
+  def get_likes(self, obj):
+    return obj.liked.all().count()
+  
+  def get_did_like(self, obj):
+    request = self.context.get('request')
+    user = request.user
+    if user.is_authenticated:
+      if user in obj.liked.all():
+        return True
+    return False
