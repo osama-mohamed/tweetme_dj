@@ -16,84 +16,84 @@ function divID(id, create=false, url='') {
 function getParameterByName(name, url=window.location.href) {
   name = name.replace(/[\[\]]/g, '\\$&');
   var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-    results = regex.exec(url);
+  results = regex.exec(url);
   if (!results) return null;
   if (!results[2]) return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
-function attachTweet(tweetValue, prepend=false, retweet){
+function formatTweet(tweetValue) {
   const currentUser = document.getElementById("current-user").getAttribute('data-user');
-  let tweetHTML;
+  let preContent;
+  if (tweetValue.parent) {
+    tweetValue = tweetValue.parent;
+    preContent = `<small style="color:#ccc;">Retweeted Via ${tweetValue.user.username} at ${tweetValue.timesince}</small>`;
+  }
   let verb = 'Like';
   if (tweetValue.did_like) {
     verb = 'Unlike';
   }
-  if (retweet && tweetValue.parent) {
-    const mainTweet = tweetValue.parent;
-    tweetHTML = `
-      <small style="color:#ccc;">Retweeted Via ${tweetValue.user.username} at ${tweetValue.timesince}</small>
-      <h5 class="mt-0 tweet-content">${tweetValue.content}</h5>
-      <p>via <a href="${mainTweet.user.url}">${mainTweet.user.username}</a> | ${ mainTweet.timesince }
-        <a href="${mainTweet.url}">view</a>
-        | <a class="retweet" id="${tweetValue.parent.id}" href="${tweetValue.parent.retweet_url}">Retweet</a>
-        | <a class="like" href="${tweetValue.parent.like_url}">${verb} (${tweetValue.likes})</a>
-        `;
-  } else {
-    tweetHTML = `
-      <h5 class="mt-0 tweet-content" >${tweetValue.content}</h5>
-      <p>via <a href="${tweetValue.user.url}">${tweetValue.user.username}</a> | ${ tweetValue.timesince }
-        <a href="${tweetValue.url}">view</a>
-        | <a class="retweet" id="${tweetValue.id}" href="${tweetValue.retweet_url}">Retweet</a>
-        | <a class="like" href="${tweetValue.like_url}">${verb} (${tweetValue.likes})</a>
-        `;
-  }
+  let tweetContent = `
+  <h5 class="mt-0 tweet-content" >${tweetValue.content}</h5>
+  <p>via <a href="${tweetValue.user.url}">${tweetValue.user.username}</a> | ${ tweetValue.timesince }
+    <a href="${tweetValue.url}">view</a>
+    | <a class="retweet" id="${tweetValue.id}" href="${tweetValue.retweet_url}">Retweet</a>
+    | <a class="like" href="${tweetValue.like_url}">${verb} (${tweetValue.likes})</a>
+  `;
   if (currentUser == tweetValue.user.username) {
-    tweetHTML +=
+    tweetContent +=
       `
       | <a href="${tweetValue.update_url}">update</a> |
       <a href="${tweetValue.delete_url}">delete</a>
       </p>
-      <hr>
     `
   } else {
-    tweetHTML += `
+    tweetContent += `
       </p>
-      <hr>
     `
   };
+  let container;
+  if (preContent) {
+    container = `<div class="tweet-container">${preContent}${tweetContent}<hr></div>`;
+  } else {
+    container = `<div class="tweet-container">${tweetContent}<hr></div>`;
+  }
+  return container;
+}
+
+
+function attachTweet(tweetValue, prepend=false, retweet){
+  const tweetHTML = formatTweet(tweetValue);
   if (prepend) {
     div.insertAdjacentHTML('afterbegin', tweetHTML);
   } else {
     div.innerHTML += tweetHTML;
   }
 }
-  
-  
+
+
 function retweet() {
-  document.addEventListener("DOMContentLoaded", function() {
-    document.body.addEventListener("click", function(e) {
-      if (e.target.classList.contains("retweet")) {
-        e.preventDefault();
-        const tweetId = e.target.id;         
-        const retweetURL = window.location.origin + '/api/tweet/' + tweetId + '/retweet/';
-        fetch(retweetURL, {
-          method: 'GET',
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data && data.url) {
-            attachTweet(data, prepend=true, retweet=true);
-            updateHashLinks();
-          } else {
-            alert(data.message);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        });
-      }
-    });
+  div.addEventListener("click", function(e) {
+    if (e.target.matches(".retweet")) {
+      e.preventDefault();
+      const tweetId = e.target.id;         
+      const retweetURL = window.location.origin + '/api/tweet/' + tweetId + '/retweet/';
+      fetch(retweetURL, {
+        method: 'GET',
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.url) {
+          attachTweet(data, prepend=true, retweet=true);
+          updateHashLinks();
+        } else {
+          alert(data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
   });
 }
 
@@ -109,12 +109,6 @@ function updateHashLinks(){
 
 
 function fetchTweets(url) {
-  // let fetchUrl;
-  // if (!url) {
-  //   fetchUrl = getParameterByName('q') ? "/api/tweet/?q=" + getParameterByName('q') : '/api/tweet/';
-  // } else {
-  //   fetchUrl = getParameterByName('q') ? url + getParameterByName('q') : url;
-  // }
   const fetchUrl = getParameterByName('q') ? url + getParameterByName('q') : url;
   fetch(fetchUrl)
   .then(response => {
@@ -218,9 +212,10 @@ function submitTweet(event){
 
 
 function tweetLike() {
-  div.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (e.target.classList.contains('like')) {
+  div.addEventListener('click', function(e) {
+    if (e.target.matches('.like')) {
+      e.preventDefault();
+      console.log(e.target, 'Like link clicked!');
       const likeURL = e.target.href; 
       fetch(likeURL, {
         method: 'GET',
