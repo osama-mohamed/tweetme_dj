@@ -16,6 +16,7 @@ class ParentTweetModelSerializer(ModelSerializer):
   date_display = SerializerMethodField()
   timesince = SerializerMethodField()
   retweet_url = SerializerMethodField()
+  like_url = SerializerMethodField()
 
   class Meta:
     model = Tweet
@@ -30,6 +31,7 @@ class ParentTweetModelSerializer(ModelSerializer):
       'date_display',
       'timesince',
       'retweet_url',
+      'like_url',
     ]
 
   def get_url(self, obj):
@@ -48,7 +50,10 @@ class ParentTweetModelSerializer(ModelSerializer):
     return timesince(obj.timestamp) + ' ago'
   
   def get_retweet_url(self, obj):
-    return self.context.get('request').build_absolute_uri(reverse_lazy('tweets:retweet', kwargs={'pk': obj.pk}))
+    return self.context.get('request').build_absolute_uri(reverse_lazy('tweets_api:retweet', kwargs={'pk': obj.pk}))
+  
+  def get_like_url(self, obj):
+    return self.context.get('request').build_absolute_uri(reverse_lazy('tweets_api:like', kwargs={'pk': obj.pk}))
 
 
 
@@ -60,6 +65,7 @@ class TweetModelSerializer(ModelSerializer):
   date_display = SerializerMethodField()
   timesince = SerializerMethodField()
   retweet_url = SerializerMethodField()
+  like_url = SerializerMethodField()
   parent = ParentTweetModelSerializer(read_only=True)
 
   class Meta:
@@ -75,6 +81,7 @@ class TweetModelSerializer(ModelSerializer):
       'date_display',
       'timesince',
       'retweet_url',
+      'like_url',
       'parent',
     ]
 
@@ -94,4 +101,7 @@ class TweetModelSerializer(ModelSerializer):
     return timesince(obj.timestamp) + ' ago'
   
   def get_retweet_url(self, obj):
-    return self.context.get('request').build_absolute_uri(reverse_lazy('tweets:retweet', kwargs={'pk': obj.pk}))
+    return self.context.get('request').build_absolute_uri(reverse_lazy('tweets_api:retweet', kwargs={'pk': obj.pk}))
+  
+  def get_like_url(self, obj):
+    return self.context.get('request').build_absolute_uri(reverse_lazy('tweets_api:like', kwargs={'pk': obj.pk}))

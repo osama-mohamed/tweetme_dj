@@ -10,6 +10,7 @@ function divID(id, create=false, url='') {
     tweetFormPreSubmit();
   }
   retweet();
+  tweetLike();
 }
 
 function getParameterByName(name, url=window.location.href) {
@@ -32,6 +33,7 @@ function attachTweet(tweetValue, prepend=false, retweet){
       <p>via <a href="${mainTweet.user.url}">${mainTweet.user.username}</a> | ${ mainTweet.timesince }
         <a href="${mainTweet.url}">view</a>
         | <a class="retweet" id="${tweetValue.parent.id}" href="${tweetValue.parent.retweet_url}">Retweet</a>
+        | <a class="like" href="${tweetValue.parent.like_url}">Like</a>
         `;
   } else {
     tweetHTML = `
@@ -39,6 +41,7 @@ function attachTweet(tweetValue, prepend=false, retweet){
       <p>via <a href="${tweetValue.user.url}">${tweetValue.user.username}</a> | ${ tweetValue.timesince }
         <a href="${tweetValue.url}">view</a>
         | <a class="retweet" id="${tweetValue.id}" href="${tweetValue.retweet_url}">Retweet</a>
+        | <a class="like" href="${tweetValue.like_url}">Like</a>
         `;
   }
   if (currentUser == tweetValue.user.username) {
@@ -206,6 +209,34 @@ function submitTweet(event){
   })
   .catch(error => {
     console.error('Error:', error);
+  });
+}
+
+
+function tweetLike() {
+  div.addEventListener('click', (e) => {
+    e.preventDefault();
+    // const this_ = e.target;
+    if (e.target.classList.contains('like')) {
+      const likeURL = e.target.href; 
+      fetch(likeURL, {
+        method: 'GET',
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.liked) {
+          e.target.textContent = 'Liked';
+          // attachTweet(data, prepend=true, retweet=true);
+          // updateHashLinks();
+        } else {
+          e.target.textContent = 'Unliked';
+          // alert(data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
   });
 }
 
