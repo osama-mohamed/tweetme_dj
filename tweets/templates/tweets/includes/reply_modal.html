@@ -1,0 +1,21 @@
+<div class="modal fade" id="replyModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form class="form tweet-form">
+        <div class="modal-header">
+          <h5 class="modal-title" id="replyModalLabel">Modal title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% csrf_token %}
+          <textarea name="content" id="tweetReplyArea" cols="30" rows="4" class="form-control" data-url="{% url 'tweets_api:create' %}"></textarea>
+          <input type="hidden" name="parent_id" id="hiddenInputId" value="">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <input type="submit" class="btn btn-primary" value="Reply">
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

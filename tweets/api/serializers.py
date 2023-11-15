@@ -1,5 +1,6 @@
 from multiprocessing import context
-from rest_framework.serializers import ModelSerializer
+from os import write
+from rest_framework.serializers import ModelSerializer, CharField
 from django.urls import reverse_lazy
 from django.utils.timesince import timesince
 
@@ -84,6 +85,7 @@ class TweetModelSerializer(ModelSerializer):
   likes = SerializerMethodField()
   did_like = SerializerMethodField()
   parent = ParentTweetModelSerializer(read_only=True)
+  parent_id = CharField(write_only=True, required=False)
 
   class Meta:
     model = Tweet
@@ -102,7 +104,11 @@ class TweetModelSerializer(ModelSerializer):
       'likes',
       'did_like',
       'parent',
+      'reply',
+      'parent_id',
     ]
+
+    # read_only_fields = ['reply']
 
   def get_url(self, obj):
     return self.context.get('request').build_absolute_uri(obj.get_absolute_url())
