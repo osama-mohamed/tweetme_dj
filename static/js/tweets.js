@@ -263,8 +263,12 @@ function reply() {
       myModal.show();
       myModal._element.addEventListener('shown.bs.modal', function () {
         tweetContent.focus();
+        document.getElementById('replyModalLabel').textContent = `Reply to ${tweetUser}`;
         let hiddenInput = document.getElementById('hiddenInputId');
         hiddenInput.value = tweetId;
+      }, { once: true });
+      myModal._element.addEventListener('hide.bs.modal', function () {
+        document.getElementById('replyModalLabel').textContent = '';
       });
       const tweetForm = document.querySelector('.tweet-form');
       tweetForm.addEventListener('submit', function (event) {
