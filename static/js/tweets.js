@@ -27,6 +27,26 @@ function formatTweet(tweetValue) {
   let isReply = tweetValue.reply;
   const currentUser = document.getElementById("current-user").getAttribute('data-user');
   let preContent;
+  let replyTd = tweetValue.id;
+  if (tweetValue.parent) {
+    replyTd = tweetValue.parent.id;
+  }
+  let likeURL = tweetValue.like_url;
+  if (tweetValue.parent) {
+    likeURL = tweetValue.parent.like_url;
+  }
+  let likes = tweetValue.likes;
+  if (tweetValue.parent) {
+    likes = tweetValue.parent.likes;
+  }
+  let didLike = tweetValue.did_like;
+  if (tweetValue.parent) {
+    didLike = tweetValue.parent.did_like;
+  }
+  let verb = 'Like';
+  if (didLike === true) {
+    verb = 'Unlike';
+  }
   if (tweetValue.parent && !isReply) {
     tweetValue = tweetValue.parent;
     preContent = `<small style="color:#ccc;">Retweeted Via ${tweetValue.user.username} at ${tweetValue.timesince}</small>`;
@@ -34,17 +54,13 @@ function formatTweet(tweetValue) {
     isReply = true;
     preContent = `<small style="color:#ccc;">Replying to @${tweetValue.parent.user.username} at ${tweetValue.parent.timesince}</small>`;
   }
-  let verb = 'Like';
-  if (tweetValue.did_like) {
-    verb = 'Unlike';
-  }
   let tweetContent = `
   <h5 class="mt-0" >${tweetValue.content}</h5>
   <p>via <a href="${tweetValue.user.url}">${tweetValue.user.username}</a> | ${ tweetValue.timesince }
     <a href="${tweetValue.url}">view</a>
     | <a class="retweet" id="${tweetValue.id}" href="${tweetValue.retweet_url}">Retweet</a>
-    | <a class="like" href="${tweetValue.like_url}">${verb} (${tweetValue.likes})</a>
-    | <a class="reply" id="${tweetValue.id}" data-user="${tweetValue.user.username}" href="#">Reply</a>
+    | <a class="like" href="${likeURL}">${verb} (${likes})</a>
+    | <a class="reply" id="${replyTd}" data-user="${tweetValue.user.username}" href="#">Reply</a>
   `;
   if (currentUser == tweetValue.user.username) {
     tweetContent +=
@@ -144,14 +160,18 @@ function fetchTweets(url) {
     if (tweetList == 0) {
       div.textContent = "No tweets currently found.";
     } else {
-      data.results.forEach((value, key) => {
-        if (value.parent){
-          attachTweet(value, prepend=false, retweet=true);
-        } else {
-          attachTweet(value, prepend=false, retweet=false);
-        }
-        updateHashLinks();
-      });
+      if (Array.isArray(data.results)) {
+        data.results.forEach((value, key) => {
+          if (value.parent) {
+            attachTweet(value, prepend = false, retweet = true);
+          } else {
+            attachTweet(value, prepend = false, retweet = false);
+          }
+          updateHashLinks();
+        });
+      } else {
+        attachTweet(data.results, prepend = false, retweet = true);
+      }
     }
   })
   .catch(error => {
@@ -231,7 +251,7 @@ function tweetLike() {
   div.addEventListener('click', function(e) {
     if (e.target.matches('.like')) {
       e.preventDefault();
-      const likeURL = e.target.href; 
+      const likeURL = e.target.href;
       fetch(likeURL, {
         method: 'GET',
       })
@@ -242,6 +262,7 @@ function tweetLike() {
         } else {
           e.target.textContent = `Like (${data.likes})`;
         }
+        refreshLinks(e.target.href, data);
       })
       .catch(error => {
         console.error('Error:', error);
@@ -250,6 +271,15 @@ function tweetLike() {
   });
 }
 
+function refreshLinks(href, data) {
+  const likeElements = document.querySelectorAll(`[href="${href}"]`);
+  likeElements.forEach(element => {
+    if (element.classList.contains('like')) {
+      const verb = data.liked ? 'Unlike' : 'Like';
+      element.textContent = `${verb} (${data.likes})`;
+    }
+  });
+}
 
 function reply() {
   div.addEventListener('click', function(e) {

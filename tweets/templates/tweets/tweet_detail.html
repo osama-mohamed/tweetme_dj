@@ -11,14 +11,22 @@
       <h3>{{ object.user }}</h3>
     </div>
     <div class="col-sm-9">
-      <p>{{ object.content }}</p>
+      <!-- <p>{{ object.content }}</p>
       <p>{{ object.timestamp|timesince }} ago</p>
       <p>
         {% if request.user == object.user %}
           <a href="{% url 'tweets:update' object.id %}">update</a>
           <a href="{% url 'tweets:delete' object.id %}">delete</a>
         {% endif %}
-      </p>
+      </p> -->
+      <div id="tweet-detail"></div>
+      <a href="#" id="load-more" style="display: none;" class="btn btn-link">Load more Tweets</a>
     </div>
   </div>
+{% endblock %}
+
+{% block javascript %}
+  <script>
+    divID('tweet-detail', create=false, url='{% url "tweets_api:detail" object.id %}');
+  </script>
 {% endblock %}

@@ -1,6 +1,6 @@
 from multiprocessing import context
 from urllib import request
-from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.db.models import Q
 from rest_framework.views import APIView
@@ -76,3 +76,28 @@ class TweetListAPIView(ListAPIView):
         Q(user__username__icontains=query)
       )
     return qs
+
+
+class TweetRetrieveAPIView(ListAPIView):
+  serializer_class = TweetModelSerializer
+  permission_classes = [AllowAny]
+  # queryset = Tweet.objects.all()
+  pagination_class = StandardResultsSetPagination
+
+
+  def get_queryset(self, *args, **kwargs):
+    pk = self.kwargs.get('pk')
+    qs = Tweet.objects.filter(pk=pk)
+    if qs.exists() and qs.count() == 1:
+      parent_obj = qs.first()
+      qs1 = parent_obj.get_children()
+      qs = (qs | qs1).distinct().extra(select={'parent_id_null': 'parent_id IS NULL'})
+    return qs.order_by('-parent_id_null', '-timestamp')
+
+  def get_serializer_context(self, *args, **kwargs):
+    context = super().get_serializer_context()
+    context['request'] = self.request
+    return context
+
+  def retrieve(self, request, *args, **kwargs):
+    return Response({'results': self.get_serializer(self.get_object()).data})
