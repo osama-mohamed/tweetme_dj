@@ -1,0 +1,9 @@
+{% for profile in recommended %}
+  <p class="lead">
+    <a href="{% url 'accounts:detail' profile.user.username %}">
+      {{ profile.user.username }}
+    </a>
+  </p>
+{% empty %}
+  <p class="lead">No recommended users found.</p>
+{% endfor %}

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load static %}
+{% load recommended %}
 
 {% block title %}
   {{ block.super }} | {{ title }}
@@ -16,6 +17,9 @@
           {{ request.user.username }}
         {% endif %}
       </h3>
+      <hr>
+      <h3>Recommended Users</h3>
+      {% recommended request.user %}
     </div>
     <div class="col-sm-9">
       {% if not request.GET.q %}

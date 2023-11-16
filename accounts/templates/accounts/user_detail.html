@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load recommended %}
 
 {% block title %}
   {{ block.super }} | {{ title }}
@@ -44,8 +45,9 @@
         <p>Not followed by any users yet.</p>
       {% endfor %}
       <hr>
-      <h3>Recommended</h3>
-      {% for profile in recommended %}
+      <h3>Recommended Users</h3>
+      {% recommended request.user %}
+      <!-- {% for profile in recommended %}
         <p>
           <a href="{% url 'accounts:detail' profile.user.username %}">
             {{ profile.user.username }}
@@ -53,7 +55,7 @@
         </p>
       {% empty %}
         <p>No recommended users found.</p>
-      {% endfor %}
+      {% endfor %} -->
 
     </div>
     <div class="col-sm-9">
