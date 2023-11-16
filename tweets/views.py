@@ -1,4 +1,5 @@
 from django.urls import reverse_lazy
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import HttpResponseRedirect
@@ -16,6 +17,8 @@ from .models import Tweet
 from .forms import TweetModelForm
 from .mixins import FormUserNeededMixin, UserOwnerMixin
 
+
+User = get_user_model()
 
 class RetweetView(View):
   def get(self, request, pk, *args, **kwargs):
@@ -89,3 +92,18 @@ class TweetDetailView(DetailView):
     context = super().get_context_data(*args, **kwargs)
     context['title'] = 'Tweet Detail'
     return context
+
+
+class SearchView(View):
+  def get(self, request, *args, **kwargs):
+    query = request.GET.get('q')
+    qs = None
+    if query:
+      qs = User.objects.filter(
+        Q(username__icontains=query)
+      )
+    context = {
+      'title': 'Search',
+      'users': qs,
+    }
+    return render(request, 'tweets/search_view.html', context)

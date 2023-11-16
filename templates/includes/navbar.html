@@ -11,7 +11,7 @@
         </li>
       </ul>
       <div class="ms-auto d-flex">
-        <form class="d-flex" method="GET" action="{% url 'tweets:list' %}">
+        <form class="d-flex" method="GET" action="{% url 'tweets:search' %}?q={{ request.GET.q }}">
           <input class="form-control me-2" id="searchInput" type="search" name='q' value='{{ request.GET.q }}' placeholder="Your Search" aria-label="Search">
           <button class="btn btn-outline-dark" type="submit">Search</button>
         </form>
@@ -46,7 +46,7 @@
   // Auto Search Input Navber
   document.addEventListener('DOMContentLoaded', () => {
     let typingTimer = '';
-    let doneInterval = 500;
+    let doneInterval = 800;
     const searchInput = document.getElementById('searchInput');
     let searchQuery = '';
 
@@ -62,7 +62,7 @@
     });
     function doneSearchTyping(){
       if (searchQuery){
-        const url = `{% url "tweets:list" %}?q=${searchQuery}`;
+        const url = `{% url "tweets:search" %}?q=${searchQuery}`;
         window.location.href = url;
       }
     }

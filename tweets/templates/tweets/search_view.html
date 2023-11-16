@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+  {{ block.super }} | {{ title }}
+{% endblock %}
+
+
+{% block body %}
+  
+  <div class="row">
+    {% if request.GET.q %}
+      <div class="col-sm-12">
+        <p class="lead">Resultes for {{ request.GET.q }}</p>
+        <hr>
+      </div>
+    {% endif %}
+    <div class="col-sm-3">
+      <h3 hidden>
+        {% if request.user.username %}
+          {{ request.user.username }}
+        {% endif %}
+        
+      </h3>
+      <h2>Users</h2>
+      <hr>
+      <p class="lead">
+        {% for user in users %}
+          <a href="{% url 'accounts:detail' username=user.username %}">{{ user.username }}</a>
+        {% empty %}
+          <p>No users found</p>
+        {% endfor %}
+      </p>
+    </div>
+    <div class="col-sm-9">
+      <h2>Tweets</h2>
+      <hr>
+      <div id='tweet-container'></div>
+      <a href="#" id="load-more" style="display: none;" class="btn btn-link">Load more Tweets</a>
+    </div>
+  </div>
+{% endblock %}
+
+
+{% block javascript %}
+  <script>
+    divID('tweet-container', create=false, url='{% url "tweets_api:search" %}');
+  </script>
+{% endblock %}

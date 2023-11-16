@@ -101,3 +101,25 @@ class TweetRetrieveAPIView(ListAPIView):
 
   def retrieve(self, request, *args, **kwargs):
     return Response({'results': self.get_serializer(self.get_object()).data})
+  
+
+class SearchTweetAPIView(ListAPIView):
+  queryset = Tweet.objects.all()
+  serializer_class = TweetModelSerializer
+  permission_classes = [AllowAny]
+  pagination_class = StandardResultsSetPagination
+
+  def get_serializer_context(self, *args, **kwargs):
+    context = super().get_serializer_context()
+    context['request'] = self.request
+    return context
+  
+  def get_queryset(self, *args, **kwargs):
+    qs = self.queryset
+    query = self.request.GET.get('q', None)
+    if query is not None:
+      qs = qs.filter(
+        Q(content__icontains=query) |
+        Q(user__username__icontains=query)
+      )
+    return qs

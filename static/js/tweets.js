@@ -141,7 +141,8 @@ function updateHashLinks(){
 
 
 function fetchTweets(url) {
-  const fetchUrl = getParameterByName('q') ? url + getParameterByName('q') : url;
+  const queryParam = getParameterByName('q');
+  const fetchUrl = queryParam ? `${url}?q=${queryParam}` : url;
   fetch(fetchUrl)
   .then(response => {
     if (!response.ok) {
