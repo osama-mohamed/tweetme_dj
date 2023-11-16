@@ -43,6 +43,17 @@
       {% empty %}
         <p>Not followed by any users yet.</p>
       {% endfor %}
+      <hr>
+      <h3>Recommended</h3>
+      {% for profile in recommended %}
+        <p>
+          <a href="{% url 'accounts:detail' profile.user.username %}">
+            {{ profile.user.username }}
+          </a>
+        </p>
+      {% empty %}
+        <p>No recommended users found.</p>
+      {% endfor %}
 
     </div>
     <div class="col-sm-9">

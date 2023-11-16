@@ -34,6 +34,14 @@ class UserProfileManager(models.Manager):
       return True
     return False
 
+  def recommended(self, user, limit_to=10): # User.objects.recommended(user=request.user)
+    profile = user.profile
+    # following = profile.following.all()
+    following = profile.get_following()
+    qs = self.get_queryset().exclude(user__in=following).exclude(id=profile.id).order_by('?')[:limit_to] # ? => random
+    return qs
+
+
 
 
 class UserProfile(models.Model):
