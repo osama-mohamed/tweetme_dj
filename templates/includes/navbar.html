@@ -20,18 +20,17 @@
       <ul class="navbar-nav mb-2 mb-lg-0">
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Profile
+            Settings
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             {% if request.user.is_authenticated %}
             <li><a class="dropdown-item" id="current-user" data-user="{{ request.user.username }}" href="{% url 'accounts:detail' username=request.user.username %}">My Profile</a></li>
+            <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
             {% else %}
             <li><a class="dropdown-item" href="{% url 'accounts:register' %}">Register</a></li>
             <li><a class="dropdown-item" href="{% url 'accounts:login' %}">Login</a></li>
             {% endif %}
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
           </ul>
         </li>
       </ul>

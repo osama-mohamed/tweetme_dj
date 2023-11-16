@@ -144,3 +144,4 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/tweet/'
+LOGOUT_REDIRECT_URL = LOGIN_URL
