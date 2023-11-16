@@ -29,6 +29,7 @@ urlpatterns = [
 
     path('api/account/', include('accounts.api.urls', namespace='accounts_api')),
     path('api/tweet/', include('tweets.api.urls', namespace='tweets_api')),
+    path('api/hashtag/', include('hashtags.api.urls', namespace='tags_api')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

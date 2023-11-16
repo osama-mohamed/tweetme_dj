@@ -8,7 +8,7 @@
 {% block body %}
   <div class="row">
     <div class="col-sm-3">
-      <h1>{{ object.username }}</h1>
+      <h3>{{ object.username }}</h3>
       <h3>Followers: <small>{{ object.followed_by.all.count }}</small></h3>
       <h3>Following: <small>{{ object.profile.get_following.count }}</small></h3>
       <p>
