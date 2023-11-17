@@ -28,11 +28,10 @@ class UserRegisterView(FormView):
 
 
 class UserDetailView(LoginRequiredMixin, DetailView):
-  queryset = User.objects.all()
   template_name = 'accounts/user_detail.html'
 
   def get_object(self):
-    return get_object_or_404(User, username__iexact=self.kwargs.get('username'))
+    return get_object_or_404(User, username__exact=self.kwargs.get('username'))
 
   def get_context_data(self, *args, **kwargs):
     context = super().get_context_data(*args, **kwargs)
