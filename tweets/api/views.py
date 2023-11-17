@@ -1,5 +1,3 @@
-from multiprocessing import context
-from urllib import request
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.db.models import Q

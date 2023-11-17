@@ -2,7 +2,6 @@ from django.urls import path
 
 from tweets.api.views import (
   TweetListAPIView,
-
 )
 
 app_name = 'accounts_api'

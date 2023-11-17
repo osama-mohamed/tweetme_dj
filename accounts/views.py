@@ -1,7 +1,7 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.views.generic import DetailView, FormView
 
@@ -27,7 +27,7 @@ class UserRegisterView(FormView):
     return super().form_valid(form)
 
 
-class UserDetailView(DetailView):
+class UserDetailView(LoginRequiredMixin, DetailView):
   queryset = User.objects.all()
   template_name = 'accounts/user_detail.html'
 

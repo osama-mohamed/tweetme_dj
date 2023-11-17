@@ -43,7 +43,8 @@ class TweetCreateView(LoginRequiredMixin, FormUserNeededMixin, CreateView):
   
 class TweetUpdateView(LoginRequiredMixin, UserOwnerMixin, UpdateView):
     model = Tweet
-    fields = ['content']
+    # fields = ['content']
+    form_class = TweetModelForm
     template_name = 'tweets/update_view.html'
     login_url = '/admin/'
   

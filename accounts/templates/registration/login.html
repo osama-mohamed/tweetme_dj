@@ -36,7 +36,6 @@
         <input type="hidden" name="next" value="{{ next }}">
       </form>
 
-      {# Assumes you set up the password_reset view in your URLconf #}
       <p class="mt-3"><a href="{% url 'accounts:register' %}">Register?</a></p>
       <!-- <p class="mt-3"><a href="{% url 'accounts:password_reset' %}">Lost password?</a></p> -->
     </div>
@@ -49,7 +48,6 @@
     document.addEventListener('DOMContentLoaded', function() {
       const usernameInput = document.getElementById('id_username').classList.add('form-control');
       const passwordInput = document.getElementById('id_password').classList.add('form-control');
-
     });
   </script>
 {% endblock %}

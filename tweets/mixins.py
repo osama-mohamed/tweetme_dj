@@ -19,4 +19,3 @@ class UserOwnerMixin(object):
     else:
       form._errors[forms.forms.NON_FIELD_ERRORS] = ErrorList(['You are not the owner so, you are not allowed to change this data.'])
       return self.form_invalid(form)
-    

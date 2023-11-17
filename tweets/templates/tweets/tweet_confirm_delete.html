@@ -6,11 +6,22 @@
 
 
 {% block body %}
-  <form method="post">
-    {% csrf_token %}
-    <p>Are you sure you want to delete the tweet "{{ object }}"?</p>
-    {{ form.as_p }}
-    <input type="submit" value="Confirm">
-    <a href="{% url 'tweets:list' %}">Cancel</a>
-  </form>
+  <div class="row">
+    <div class="col-sm-3">
+      <h3>
+        {% if request.user.username %}
+          {{ request.user.username }}
+        {% endif %}
+      </h3>
+    </div>
+    <div class="col-sm-9">
+      <form method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to delete the tweet "{{ object }}"?</p>
+        {{ form.as_p }}
+        <input type="submit" value="Confirm" class="btn btn-danger">
+        <a href="{% url 'tweets:list' %}">Cancel</a>
+      </form>
+    </div>
+  </div>
 {% endblock %}

@@ -1,5 +1,3 @@
-from multiprocessing import context
-from os import write
 from rest_framework.serializers import ModelSerializer, CharField
 from django.urls import reverse_lazy
 from django.utils.timesince import timesince

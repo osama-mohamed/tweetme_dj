@@ -17,6 +17,5 @@ class TweetModelForm(forms.ModelForm):
   class Meta:
     model = Tweet
     fields = [
-      # 'user',
       'content',
     ]

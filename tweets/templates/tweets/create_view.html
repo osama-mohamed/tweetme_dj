@@ -6,5 +6,16 @@
 
 
 {% block body %}
-  {% include "tweets/includes/form.html" with form=form btn_title=btn_title %}
+  <div class="row">
+    <div class="col-sm-3">
+      <h3>
+        {% if request.user.username %}
+          {{ request.user.username }}
+        {% endif %}
+      </h3>
+    </div>
+    <div class="col-sm-9">
+      {% include "tweets/includes/form.html" with form=form btn_title=btn_title %}
+    </div>
+  </div>
 {% endblock %}
