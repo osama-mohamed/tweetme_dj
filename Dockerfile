@@ -21,6 +21,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN python manage.py migrate
 RUN python manage.py collectstatic --noinput
 
+LABEL maintainer="Osama Mohamed"
+LABEL github="https://github.com/osama-mohamed"
+LABEL linkedin="https://www.linkedin.com/in/osama-mohamed-ms/"
+
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
 
